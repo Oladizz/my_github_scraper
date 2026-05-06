@@ -1,8 +1,8 @@
-name: Daily Scraper
+name: News Scraper & Telegram Notifier
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
+    - cron: '*/30 * * * *' # Runs every 30 minutes
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -26,13 +26,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Scraper
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          scrapy crawl quotes -o quotes.json
+          scrapy crawl news -o news.json
 
       - name: Commit and Push results
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
-          git add quotes.json
-          git commit -m "Update scraped data" || echo "No changes to commit"
+          git add news.json
+          git commit -m "Update latest news data" || echo "No changes to commit"
           git push
