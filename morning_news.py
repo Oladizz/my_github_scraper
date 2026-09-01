@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+TELEGRAM_BOT_TOKEN = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+TELEGRAM_CHAT_ID = str(os.getenv("TELEGRAM_CHAT_ID") or "").strip()
 
 
 def strip_url_text(value):
@@ -289,6 +289,7 @@ def send_telegram_message(text):
         }
         response = requests.post(url, data=data, timeout=30)
         response.raise_for_status()
+        print(f"✓ Sent chunk {idx + 1}/{len(chunks)} ({len(chunk)} chars)")
 
 
 def build_section(title, items, summary):
