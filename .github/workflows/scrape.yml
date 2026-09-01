@@ -2,7 +2,7 @@ name: News Scraper & Telegram Notifier
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Runs every 30 minutes
+    - cron: '0 */6 * * *' # Runs every 6 hours
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -19,23 +19,23 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Run Scraper
+      - name: Run Morning Briefing
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          scrapy crawl news -o news.json
+          python morning_news.py
 
       - name: Commit and Push results
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
-          git add news.json
+          git add news.json || true
           git commit -m "Update latest news data" || echo "No changes to commit"
-          git push
+          git push || echo "No changes to push"
