@@ -202,14 +202,36 @@ def fetch_tech_news(limit=3):
         "https://www.anthropic.com/news.rss",
         "https://blog.google/feed/",
         "https://blogs.microsoft.com/feed/",
-        "https://news.google.com/rss/search?q=site:manus.im+AI+news&hl=en-US&gl=US&ceid=US:en",
+        "https://about.meta.com/blog/rss/",
+        "https://www.nvidia.com/en-us/ai-data-science/rss/",
+        "https://x.ai/rss",
+        "https://www.mistral.ai/en/news/rss/",
+        "https://cohere.com/news/rss",
+        "https://www.perplexity.ai/rss",
         "https://news.google.com/rss/search?q=site:openai.com+ChatGPT+news&hl=en-US&gl=US&ceid=US:en",
         "https://news.google.com/rss/search?q=site:anthropic.com+Claude+news&hl=en-US&gl=US&ceid=US:en",
+        "https://news.google.com/rss/search?q=site:google.com+Gemini+AI+news&hl=en-US&gl=US&ceid=US:en",
+        "https://news.google.com/rss/search?q=site:microsoft.com+Copilot+AI+news&hl=en-US&gl=US&ceid=US:en",
+        "https://news.google.com/rss/search?q=site:manus.im+AI+news&hl=en-US&gl=US&ceid=US:en",
         "https://news.google.com/rss/search?q=AI+agents+launch+news&hl=en-US&gl=US&ceid=US:en",
     ]
 
     filtered = []
     seen = set()
+    ai_domains = (
+        "openai.com",
+        "anthropic.com",
+        "blog.google",
+        "blogs.microsoft.com",
+        "meta.com",
+        "nvidia.com",
+        "x.ai",
+        "mistral.ai",
+        "cohere.com",
+        "perplexity.ai",
+        "manus.im",
+    )
+
     for feed_url in feeds:
         try:
             for item in fetch_rss_items(feed_url, limit=2):
@@ -220,8 +242,13 @@ def fetch_tech_news(limit=3):
 
                 domain = urlparse(link).netloc.lower()
                 title = item["title"].lower()
-                if not any(keyword in title for keyword in ["openai", "anthropic", "chatgpt", "claude", "microsoft", "google", "gemini", "manus", "ai", "agent", "llm"]):
-                    if not any(domain.startswith(prefix) for prefix in ["openai.com", "anthropic.com", "blog.google", "blogs.microsoft.com", "manus.im"]):
+                if not any(keyword in title for keyword in [
+                    "openai", "anthropic", "chatgpt", "claude", "microsoft",
+                    "google", "gemini", "manus", "ai", "agent", "llm",
+                    "copilot", "meta", "nvidia", "xai", "mistral", "cohere",
+                    "perplexity", "model"
+                ]):
+                    if not any(domain.startswith(prefix) for prefix in ai_domains):
                         continue
 
                 if is_low_quality_story(item["title"], item["link"], item["summary"]):
